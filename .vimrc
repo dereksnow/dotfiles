@@ -44,6 +44,7 @@ NeoBundle 'vim-scripts/Smart-Tabs'
 NeoBundle 'scrooloose/syntastic'
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'terryma/vim-multiple-cursors'
+NeoBundle 'Shougo/vimfiler.vim'
 NeoBundle 'Shougo/vimproc.vim', {
 \ 'build' : {
 \     'windows' : 'tools\\update-dll-mingw',
@@ -92,12 +93,15 @@ set undofile
 set undolevels=1000 "max number of changes that can be undone
 set undoreload=10000 "max number lines to save for undo on a buffer reload
 
-" ---- Unite setting ----
+" ---- Unite settings ----
 let g:unite_source_history_yank_enable = 1
 nnoremap <space>y :Unite history/yank<cr>
 nnoremap <C-p> :Unite file_rec/async<cr>
 nnoremap <space>/ :Unite grep:.<cr>
 nnoremap <space>s :Unite -quick-match buffer<cr>
+
+" ---- vimfiler settings ----
+:let g:vimfiler_as_default_explorer = 1
 
 " ---- scrooloose/syntastic settings ----
 let g:syntastic_error_symbol = '✘'
@@ -127,3 +131,10 @@ autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
 autocmd FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
 " for css or scss
 autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
+
+
+" Shortcuts to open file in web browser (Mac mapping"
+nnoremap <F12>f :exe ':silent !open -a /Applications/Firefox.app %'<CR>
+nnoremap <F12>c :exe ':silent !open -a /Applications/Google\ Chrome.app %'<CR>
+nnoremap <F12>g :exe ':silent !open -a /Applications/Google\ Chrome.app %'<CR>
+nnoremap <F12>s :exe ':silent !open /Applications/Safari.app %'<CR>
