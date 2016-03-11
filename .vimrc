@@ -1,8 +1,56 @@
+" ***************************************************
+" Code to have cursor change for iterm and Tmux
+" Copied from
+" https://github.com/wincent/wincent/blob/eb089884f7d2c884e6d1214abdec35aa3b2adebc/.vim/plugin/term.vim#L23-L35
+" Should move into plugin
+" ***************************************************
+" terminal defines
+let s:iterm   = exists('$ITERM_PROFILE') || exists('$ITERM_SESSION_ID') || filereadable(expand("~/.vim/.assume-iterm"))
+let s:tmux    = exists('$TMUX')
+
+function! s:EscapeEscapes(string)
+  " double each <Esc>
+  return substitute(a:string, "\<Esc>", "\<Esc>\<Esc>", "g")
+endfunction
+ 
+function! s:TmuxWrap(string)
+  if strlen(a:string) == 0
+    return ""
+  end
+
+  let tmux_begin  = "\<Esc>Ptmux;"
+  let tmux_end    = "\<Esc>\\"
+
+  return tmux_begin . s:EscapeEscapes(a:string) . tmux_end
+endfunction
+
+" Change cursor shape depending on mode - ITerm2 on OSX support
+if s:iterm
+  let start_insert  = "\<Esc>]50;CursorShape=1\x7"
+  let end_insert    = "\<Esc>]50;CursorShape=0\x7"
+
+  if s:tmux
+    let start_insert  = s:TmuxWrap(start_insert)
+    let end_insert    = s:TmuxWrap(end_insert)
+  endif
+
+  let &t_SI = start_insert
+  let &t_EI = end_insert
+endif
+
+" ****************************************************************
+" End code for cursor change for iterm and Tmux
+" ****************************************************************
+
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " Change mapleader
 let mapleader=","
+
+" Configure timeouts to make returning to normal mode faster
+set timeoutlen=1000 ttimeoutlen=10
+
 
 " Note: Skip initialization for vim-tiny or vim-small.
 if !1 | finish | endif
@@ -38,13 +86,19 @@ NeoBundle 'othree/vim-autocomplpop'
 NeoBundle 'valloric/MatchTagAlways'
 NeoBundle 'matchit.zip'
 NeoBundle 'lilydjwg/colorizer'
-NeoBundle 'bling/vim-airline'
+NeoBundle 'chriskempson/base16-vim'
+NeoBundle 'vim-airline/vim-airline'
+NeoBundle 'vim-airline/vim-airline-themes'
 NeoBundle 'wavded/vim-stylus'
 NeoBundle 'vim-scripts/Smart-Tabs'
 NeoBundle 'scrooloose/syntastic'
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'terryma/vim-multiple-cursors'
 NeoBundle 'Shougo/vimfiler.vim'
+NeoBundle 'christoomey/vim-tmux-navigator'
+NeoBundle 'rizzatti/dash.vim'
+NeoBundle 'kchmck/vim-coffee-script'
+NeoBundle 'digitaltoad/vim-pug'
 NeoBundle 'Shougo/vimproc.vim', {
 \ 'build' : {
 \     'windows' : 'tools\\update-dll-mingw',
@@ -66,11 +120,14 @@ NeoBundleCheck
 
 syntax enable
 set background=dark
-colorscheme solarized
+colorscheme base16-ocean
 set guifont=Menlo\ for\ Powerline
 set number
 set showcmd
 set list
+
+" Set *.md files to use markdown instead of modula2 syntax highlighting
+autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 
 " map clipboard to unnamed register
 set clipboard=unnamed
@@ -103,6 +160,9 @@ nnoremap <space>s :Unite -quick-match buffer<cr>
 " ---- vimfiler settings ----
 :let g:vimfiler_as_default_explorer = 1
 
+" ---- dash key bindings ----
+:nmap <silent> <leader>d <Plug>DashSearch
+
 " ---- scrooloose/syntastic settings ----
 let g:syntastic_error_symbol = '✘'
 let g:syntastic_warning_symbol = "▲"
@@ -112,11 +172,12 @@ augroup mySyntastic
 augroup END
 
 " ---- airline settings ----
+:let g:airline_theme='base16_default'
 set laststatus=2
 let g:airline_powerline_fonts = 1
 
 " Show PASTE if in paste mode
-let g:airline_detect_paste=1
+" let g:airline_detect_paste=1
 
 " Show airline for tabs too 
 let g:airline#extensions#tabline#enabled = 1 
@@ -134,7 +195,7 @@ autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
 
 
 " Shortcuts to open file in web browser (Mac mapping"
-nnoremap <F12>f :exe ':silent !open -a /Applications/Firefox.app %'<CR>
+nnoremap <F12>f :exe ':silent !open -a /Applications/FirefoxDeveloperEdition.app %'<CR>
 nnoremap <F12>c :exe ':silent !open -a /Applications/Google\ Chrome.app %'<CR>
 nnoremap <F12>g :exe ':silent !open -a /Applications/Google\ Chrome.app %'<CR>
 nnoremap <F12>s :exe ':silent !open /Applications/Safari.app %'<CR>
