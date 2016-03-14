@@ -144,8 +144,12 @@ set listchars=tab:▸\ ,eol:¬
 set shiftwidth=2
 set tabstop=2
 
+" Specify location of backup and swap files
+set backupdir=~/.vim/backup// 
+set directory=~/.vim/swap//
+
 " Persistent undo settings
-set undodir=~/.vim/undodir
+set undodir=~/.vim/undodir/
 set undofile
 set undolevels=1000 "max number of changes that can be undone
 set undoreload=10000 "max number lines to save for undo on a buffer reload
