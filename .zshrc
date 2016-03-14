@@ -14,6 +14,8 @@ fi
 export NVM_DIR=~/.nvm 
 source $(brew --prefix nvm)/nvm.sh
 
+# Launch macvim in terminal (without gui)
+alias mvit="mvim -v" 
 # Support for 256 colors in tmux
 alias tmux="TERM=screen-256color-bce tmux"
 
